@@ -1,5 +1,6 @@
 ﻿using System;
 using DeliveryApp.Core.Domain.Model;
+using FluentAssertions;
 using Xunit;
 
 namespace DeliveryApp.UnitTests.Domain.Model;
@@ -20,11 +21,12 @@ public class LocationShould
     {
         //Arrange
         //Act
-        var location = new Location(x, y);
+        var location = Location.Create(x, y);
 
         //Assert
-        Assert.Equal(x, location.X);
-        Assert.Equal(y, location.Y);
+        location.IsSuccess.Should().BeTrue();
+        location.Value.X.Should().Be(x);
+        location.Value.Y.Should().Be(y);
     }
 
     /// <summary>
@@ -45,8 +47,9 @@ public class LocationShould
     {
         //Arrange
         //Act
+        var result = Location.Create(x, y);
         //Assert
-        Assert.Throws<ArgumentOutOfRangeException>(() => new Location(x, y));
+        result.IsFailure.Should().BeTrue();
     }
 
     /// <summary>
@@ -56,7 +59,7 @@ public class LocationShould
     public void MeasureDistanceToItself()
     {
         //Arrange
-        var me = new Location(1, 2);
+        var me = Location.Create(1, 2).Value;
         //Act
         var distanceTo = me.DistanceTo(me);
         //Assert
@@ -79,8 +82,8 @@ public class LocationShould
     public void MeasureDistanceToAnotherLocation(int x1, int y1, int x2, int y2, int givenDistance)
     {
         //Arrange
-        var first = new Location(x1, y1);
-        var second = new Location(x2, y2);
+        var first = Location.Create(x1, y1).Value;
+        var second = Location.Create(x2, y2).Value;
         //Act
         var firstDistanceTo = first.DistanceTo(second);
         var secondDistanceTo = second.DistanceTo(first);
@@ -96,11 +99,11 @@ public class LocationShould
     public void ThrowExceptionWhenMeasureDistanceToNull()
     {
         //Arrange
-        var me = new Location(1, 2);
+        var me = Location.Create(1, 2);
 
         //Act
         //Assert
-        Assert.Throws<ArgumentNullException>(() => me.DistanceTo(null!));
+        Assert.Throws<ArgumentNullException>(() => me.Value.DistanceTo(null!));
     }
 
     /// <summary>
@@ -110,7 +113,7 @@ public class LocationShould
     public void BeEqualToItself()
     {
         //Arrange
-        var first = new Location(1, 2);
+        var first = Location.Create(1, 2).Value;
         var second = first;
         //Act
         var eq = first.Equals(second);
@@ -128,8 +131,8 @@ public class LocationShould
     public void BeEqualToTheSame(int x, int y)
     {
         //Arrange
-        var first = new Location(x, y);
-        var second = new Location(x, y);
+        var first = Location.Create(x, y).Value;
+        var second = Location.Create(x, y).Value;
         //Act
         var eq = first.Equals(second);
         //Assert
@@ -149,8 +152,8 @@ public class LocationShould
     public void BeNotEqualToDifferent(int x1, int y1, int x2, int y2)
     {
         //Arrange
-        var first = new Location(x1, y1);
-        var second = new Location(x2, y2);
+        var first = Location.Create(x1, y1).Value;
+        var second = Location.Create(x2, y2).Value;
         //Act
         var eq = first.Equals(second);
         //Assert
