@@ -1,4 +1,5 @@
 ﻿using CSharpFunctionalExtensions;
+using Errs;
 
 namespace DeliveryApp.Core.Domain.Model;
 
@@ -38,13 +39,8 @@ public class Location : ValueObject
     /// </summary>
     /// <param name="x">горизонталь</param>
     /// <param name="y">вертикаль</param>
-    public Location(int x, int y) : this()
+    private Location(int x, int y) : this()
     {
-        ArgumentOutOfRangeException.ThrowIfLessThan(x, MinX);
-        ArgumentOutOfRangeException.ThrowIfGreaterThan(x, MaxX);
-        ArgumentOutOfRangeException.ThrowIfLessThan(y, MinY);
-        ArgumentOutOfRangeException.ThrowIfGreaterThan(y, MaxY);
-
         X = x;
         Y = y;
     }
@@ -58,6 +54,22 @@ public class Location : ValueObject
     ///     координата по вертикали
     /// </summary>
     public int Y { get; }
+
+    /// <summary>
+    ///     Создает объект типа <see cref="Location" />
+    /// </summary>
+    /// <param name="x">горизонталь</param>
+    /// <param name="y">вертикаль</param>
+    /// <returns></returns>
+    public static Result<Location, Error> Create(int x, int y)
+    {
+        if (x < MinX || x > MaxX)
+            return GeneralErrors.ValueMustBeBetween(nameof(x), x, MinX, MaxX);
+        if (y < MinY || y > MaxY)
+            return GeneralErrors.ValueMustBeBetween(nameof(y), y, MinY, MaxY);
+
+        return new Location(x, y);
+    }
 
     /// <summary>
     ///     Рассчитывает расстояние до другого Location
