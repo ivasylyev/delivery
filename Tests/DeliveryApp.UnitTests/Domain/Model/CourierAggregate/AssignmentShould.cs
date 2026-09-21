@@ -30,10 +30,10 @@ public class AssignmentShould
     }
 
     /// <summary>
-    /// Проверяем невозможность завершить назначение если курьер дальше 1-й клетки от заказчика
+    ///     Проверяем возможность завершить назначение если курьер в той же или соседней клетке от заказчика
     /// </summary>
     [Fact]
-    public void NotAllowCompleteIfCourierTooFar()
+    public void AllowCompleteIfCourierNearby()
     {
         //Arrange
         var orderId = Guid.NewGuid();
@@ -49,7 +49,42 @@ public class AssignmentShould
     }
 
     /// <summary>
-    /// Проверяем невозможность заверишть уже завершенный заказ
+    ///     Проверяем невозможность завершить назначение если курьер дальше 1-й клетки от заказчика
+    /// </summary>
+    [Fact]
+    public void NotAllowCompleteIfCourierTooFar()
+    {
+        //Arrange
+        var orderId = Guid.NewGuid();
+        var location = Location.Create(1, 2);
+        var volume = Volume.Create(5);
+        var assignment = Assignment.Create(orderId, location.Value, volume.Value);
+
+        //Act
+        var completed = assignment.Value.Complete(Location.Create(2, 3).Value);
+        //Assert
+        completed.IsSuccess.Should().BeFalse();
+        assignment.Value.Status.Should().BeEquivalentTo(Status.Assigned);
+    }
+
+    /// <summary>
+    ///     Проверяем невозможность передать пустой идентификатор заказа в назначение
+    /// </summary>
+    [Fact]
+    public void NotTakeEmptyOrderId()
+    {
+        //Arrange
+        var location = Location.Create(1, 2);
+        var volume = Volume.Create(5);
+
+        //Act
+        var assignment = Assignment.Create(Guid.Empty, location.Value, volume.Value);
+        //Assert
+        assignment.IsSuccess.Should().BeFalse();
+    }
+
+    /// <summary>
+    ///     Проверяем невозможность заверишть уже завершенный заказ
     /// </summary>
     [Fact]
     public void NotAllowCompleteIfAlreadyCompeted()
@@ -67,5 +102,4 @@ public class AssignmentShould
         completed1.IsSuccess.Should().BeTrue();
         completed2.IsSuccess.Should().BeFalse();
     }
-
 }

@@ -1,10 +1,12 @@
 ﻿using CSharpFunctionalExtensions;
 using Errs;
+using System.Diagnostics.CodeAnalysis;
 
 namespace DeliveryApp.Core.Domain.Model.CourierAggregate;
 
 public class Assignment : Entity<Guid>
 {
+    [ExcludeFromCodeCoverage]
     private Assignment()
     {
     }
@@ -27,6 +29,8 @@ public class Assignment : Entity<Guid>
 
     public static Result<Assignment, Error> Create(Guid orderId, Location location, Volume volume)
     {
+        if (orderId == Guid.Empty)
+            return new Error("orderid.must.not.be.empty", "Provided Order Id must not be Guid.Empty");
         if (location == null)
             return GeneralErrors.ValueIsRequired(nameof(location));
         if (volume == null)
