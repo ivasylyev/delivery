@@ -2,7 +2,7 @@
 using CSharpFunctionalExtensions;
 using Errs;
 
-namespace DeliveryApp.Core.Domain.Model.CourierAggregate;
+namespace DeliveryApp.Core.Domain.Model;
 
 public class Volume : ValueObject
 {
@@ -28,5 +28,10 @@ public class Volume : ValueObject
     protected override IEnumerable<object> GetEqualityComponents()
     {
         yield return Liters;
+    }
+
+    public override string ToString()
+    {
+        return $"Liters:{Liters}";
     }
 }
