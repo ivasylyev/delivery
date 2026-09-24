@@ -25,6 +25,56 @@ public class Volume : ValueObject
         return new Volume(liters);
     }
 
+    public static Volume operator +(Volume v1, Volume v2)
+    {
+        ArgumentNullException.ThrowIfNull(v1);
+        ArgumentNullException.ThrowIfNull(v2);
+
+        return Create(v1.Liters + v2.Liters).Value;
+    }
+
+    public static Volume operator -(Volume v1, Volume v2)
+    {
+        ArgumentNullException.ThrowIfNull(v1);
+        ArgumentNullException.ThrowIfNull(v2);
+        if (v1.Liters <= v2.Liters)
+            throw new InvalidOperationException("The minuend must be greater than the subtrahend.");
+
+        return Create(v1.Liters - v2.Liters).Value;
+    }
+
+    public static bool operator <(Volume v1, Volume v2)
+    {
+        ArgumentNullException.ThrowIfNull(v1);
+        ArgumentNullException.ThrowIfNull(v2);
+
+        return v1.Liters < v2.Liters;
+    }
+
+    public static bool operator >(Volume v1, Volume v2)
+    {
+        ArgumentNullException.ThrowIfNull(v1);
+        ArgumentNullException.ThrowIfNull(v2);
+
+        return v1.Liters > v2.Liters;
+    }
+
+    public static bool operator <=(Volume v1, Volume v2)
+    {
+        ArgumentNullException.ThrowIfNull(v1);
+        ArgumentNullException.ThrowIfNull(v2);
+
+        return v1.Liters <= v2.Liters;
+    }
+
+    public static bool operator >=(Volume v1, Volume v2)
+    {
+        ArgumentNullException.ThrowIfNull(v1);
+        ArgumentNullException.ThrowIfNull(v2);
+
+        return v1.Liters >= v2.Liters;
+    }
+
     protected override IEnumerable<object> GetEqualityComponents()
     {
         yield return Liters;

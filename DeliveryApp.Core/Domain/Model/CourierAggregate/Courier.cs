@@ -43,12 +43,17 @@ public class Courier : Aggregate<Guid>
     {
         if (order == null)
             return GeneralErrors.ValueIsRequired(nameof(order));
+        
+        var sum = order.Volume;
+        foreach (var assignment in Assignments)
+        {
+            sum  += assignment.Volume;
+        }
 
-        var assignedLiters = Assignments.Sum(a => a.Volume.Liters);
-        return assignedLiters + order.Volume.Liters <= MaxVolume.Liters;
+        return sum <= MaxVolume;
     }
 
-    public Result<object, Error> AssignOrder(Order order)
+    public UnitResult<Error> AssignOrder(Order order)
     {
         if (order == null)
             return GeneralErrors.ValueIsRequired(nameof(order));
@@ -56,10 +61,9 @@ public class Courier : Aggregate<Guid>
         {
             var assignment = Assignment.Create(order.Id, order.Location, order.Volume).Value;
             Assignments.Add(assignment);
-            order.Assign();
         }
 
-        return new object();
+        return UnitResult.Success<Error>();
     }
 
     public Result<bool, Error> CompleteOrder(Order order)
@@ -74,7 +78,7 @@ public class Courier : Aggregate<Guid>
 
         return completed;
     }
-    public Result<object, Error> MoveTo(Location location)
+    public UnitResult<Error> MoveTo(Location location)
     {
         if (location == null)
             return GeneralErrors.ValueIsRequired(nameof(location));
@@ -85,6 +89,6 @@ public class Courier : Aggregate<Guid>
 
         Location = location;
 
-        return new object();
+        return UnitResult.Success<Error>();
     }
 }
