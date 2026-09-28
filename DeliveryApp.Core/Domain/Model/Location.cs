@@ -89,4 +89,9 @@ public class Location : ValueObject
         yield return X;
         yield return Y;
     }
+
+    public override string ToString()
+    {
+        return $"({X}, {Y})";
+    }
 }

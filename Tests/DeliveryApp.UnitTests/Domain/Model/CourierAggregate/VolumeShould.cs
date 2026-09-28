@@ -1,4 +1,4 @@
-﻿using DeliveryApp.Core.Domain.Model.CourierAggregate;
+﻿using DeliveryApp.Core.Domain.Model;
 using FluentAssertions;
 using Xunit;
 
@@ -54,8 +54,8 @@ public class VolumeShould
         //Act
         var eq = first.Equals(second);
         //Assert
-        Assert.True(eq);
-        Assert.True(first == second);
+        eq.Should().BeTrue();
+        first.Should().BeEquivalentTo(second);
     }
 
     /// <summary>
@@ -72,7 +72,117 @@ public class VolumeShould
         //Act
         var eq = first.Equals(second);
         //Assert
-        Assert.False(eq);
-        Assert.False(first == second);
+        eq.Should().BeFalse();
+        first.Should().NotBeEquivalentTo(second);
+    }
+
+    /// <summary>
+    ///     Проверяем сложение Volume
+    /// </summary>
+    [Theory]
+    [InlineData(2, 6, 8)]
+    [InlineData(1, 1, 2)]
+    public void CalculateSum(int l1, int l2, int ld)
+    {
+        //Arrange
+        var first = Volume.Create(l1).Value;
+        var second = Volume.Create(l2).Value;
+        //Act
+        var sum = first + second;
+        //Assert
+        sum.Liters.Should().Be(ld);
+    }
+
+    /// <summary>
+    ///     Проверяем вычитаение Volume
+    /// </summary>
+    [Theory]
+    [InlineData(6, 1, 5)]
+    [InlineData(10, 4, 6)]
+    public void CalculateDifference(int l1, int l2, int ld)
+    {
+        //Arrange
+        var first = Volume.Create(l1).Value;
+        var second = Volume.Create(l2).Value;
+        //Act
+        var sum = first - second;
+        //Assert
+        sum.Liters.Should().Be(ld);
+    }
+
+    /// <summary>
+    ///     Проверяем меньше или равно Volume
+    /// </summary>
+    [Theory]
+    [InlineData(6, 1, false)]
+    [InlineData(10, 4, false)]
+    [InlineData(5, 5, true)]
+    [InlineData(1, 5, true)]
+    public void CompareLessOrEqual(int l1, int l2, bool res)
+    {
+        //Arrange
+        var first = Volume.Create(l1).Value;
+        var second = Volume.Create(l2).Value;
+        //Act
+        var lessOrEqual = first <= second;
+        //Assert
+        lessOrEqual.Should().Be(res);
+    }
+
+    /// <summary>
+    ///     Проверяем больше или равно Volume
+    /// </summary>
+    [Theory]
+    [InlineData(6, 1, true)]
+    [InlineData(10, 4, true)]
+    [InlineData(5, 5, true)]
+    [InlineData(1, 5, false)]
+    public void CompareMoreOrEqual(int l1, int l2, bool res)
+    {
+        //Arrange
+        var first = Volume.Create(l1).Value;
+        var second = Volume.Create(l2).Value;
+        //Act
+        var lessOrEqual = first >= second;
+        //Assert
+        lessOrEqual.Should().Be(res);
+    }
+
+    /// <summary>
+    ///     Проверяем меньше или равно Volume
+    /// </summary>
+    [Theory]
+    [InlineData(6, 1, false)]
+    [InlineData(10, 4, false)]
+    [InlineData(5, 5, false)]
+    [InlineData(1, 5, true)]
+    public void CompareLess(int l1, int l2, bool res)
+    {
+        //Arrange
+        var first = Volume.Create(l1).Value;
+        var second = Volume.Create(l2).Value;
+        //Act
+        var lessOrEqual = first < second;
+        //Assert
+        lessOrEqual.Should().Be(res);
+    }
+
+    /// <summary>
+    ///     Проверяем больше или равно Volume
+    /// </summary>
+    [Theory]
+    [InlineData(6, 1, true)]
+    [InlineData(10, 4, true)]
+    [InlineData(5, 5, false)]
+    [InlineData(1, 5, false)]
+    public void CompareMore(int l1, int l2, bool res)
+    {
+        //Arrange
+        var first = Volume.Create(l1).Value;
+        var second = Volume.Create(l2).Value;
+        //Act
+        var lessOrEqual = first > second;
+        //Assert
+        lessOrEqual.Should().Be(res);
     }
 }
