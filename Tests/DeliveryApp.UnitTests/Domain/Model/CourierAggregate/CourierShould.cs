@@ -68,6 +68,25 @@ public class CourierShould
         courier.Value.Assignments.First().Status.Should().Be(Status.Assigned);
     }
 
+    /// <summary>
+    ///     Проверяем изменение заполненности курьера
+    /// </summary>
+    [Fact]
+    public void ChangeFillFactorOnAssignment()
+    {
+        //Arrange
+        var order = CreateTestOrder(5);
+        var location = Location.Create(3, 4);
+        var name = "Test";
+        var courier = Courier.Create(location.Value, name);
+
+        //Act
+        courier.Value.AssignOrder(order);
+
+        //Assert
+        courier.Value.GetFillFactor().IsSuccess.Should().BeTrue();
+        courier.Value.GetFillFactor().Value.Should().Be(5.0 / 20);
+    }
 
     /// <summary>
     ///     Проверяем невозможность назначить слишком большой заказ

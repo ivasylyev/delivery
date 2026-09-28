@@ -74,6 +74,13 @@ public class Volume : ValueObject
 
         return v1.Liters >= v2.Liters;
     }
+    public static double operator / (Volume v1, Volume v2)
+    {
+        ArgumentNullException.ThrowIfNull(v1);
+        ArgumentNullException.ThrowIfNull(v2);
+
+        return (double)v1.Liters / v2.Liters;
+    }
 
     protected override IEnumerable<object> GetEqualityComponents()
     {
