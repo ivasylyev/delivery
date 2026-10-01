@@ -55,6 +55,29 @@ public class DispatcherServiceShould
         result.IsSuccess.Should().BeFalse();
         order.Value.Status.Should().BeEquivalentTo(OrderStatus.Created);
     }
+
+    /// <summary>
+    /// Проверяем невозможность назначить заказ, если он уже назначен
+    /// </summary>
+    [Fact]
+    public void ReturnErrorIfOrderIsAssigned()
+    {
+        //Arrange
+        var order = CreateOrder(1, 2, 5);
+        IDispatcherService service = new DispatcherService();
+        order.Value.Assign();
+
+        var courier1 = CreateCourier("test_1", 5, 6);
+        var courier2 = CreateCourier("test_2", 3, 4);
+
+        //Act
+        var result = service.FindCourierAndAssignOrder(order.Value, [courier1.Value, courier2.Value]);
+
+        //Assert
+        result.IsSuccess.Should().BeFalse();
+        order.Value.Status.Should().BeEquivalentTo(OrderStatus.Assigned);
+    }
+
     /// <summary>
     /// Проверяем возможность назначить заказ, на ближайшего курьера
     /// </summary>

@@ -9,8 +9,13 @@ public class DispatcherService : IDispatcherService
 {
     public Result<Courier, Error> FindCourierAndAssignOrder(Order orderToAssign, IEnumerable<Courier> couriers)
     {
-        ArgumentNullException.ThrowIfNull(orderToAssign);
-        ArgumentNullException.ThrowIfNull(couriers);
+        if (orderToAssign == null)
+            return new Error("order.must.not.be.null", "Provided orderToAssign must not be NULL");
+        if (orderToAssign.Status != OrderStatus.Created)
+            return new Error("order.must.have.status.created", "Provided orderToAssign must have status 'Created'");
+
+        if (couriers == null)
+            return new Error("couriers.must.not.be.null", "Provided couriers must not be NULL");
 
         // исключаем всех курьеров, которым нельзя назначить заказ
         var assignable = couriers.Where(c => c.CanAssign(orderToAssign).Value).ToList();
@@ -39,8 +44,25 @@ public class DispatcherService : IDispatcherService
         if (candidate.Courier == null)
             return new Error("could.not.find.available.courier", "Can not find available courier to assign the order to");
 
-        candidate.Courier.AssignOrder(orderToAssign);
-        orderToAssign.Assign();
+        try
+        {
+            // тут напрашивается Outbox, но за неимением делаем откат назначения в случе сбоя 
+            var assign = orderToAssign.Assign();
+            if (assign.IsFailure)
+                return assign.Error;
+
+            var candidateAssign = candidate.Courier.AssignOrder(orderToAssign);
+            if (candidateAssign.IsFailure)
+            {
+                orderToAssign.AssignRollback();
+                return candidateAssign.Error;
+            }
+        }
+        catch (Exception e)
+        {
+            if (candidate.Courier == null)
+                return new Error("invalid.operation", e.Message);
+        }
 
         return candidate.Courier;
     }
