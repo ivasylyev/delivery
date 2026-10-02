@@ -46,6 +46,24 @@ public class OrderShould
     }
 
     /// <summary>
+    ///     Проверяем возможность откатить назначение 
+    /// </summary>
+    [Fact]
+    public void AllowToRollbackAssignedOrder()
+    {
+        //Arrange
+        var order = CreateOrder();
+        var assign = order.Assign();
+        //Act
+        var rollback = order.AssignRollback();
+        //Assert
+        assign.IsSuccess.Should().BeTrue();
+        rollback.IsSuccess.Should().BeTrue();
+
+        order.Status.Should().BeEquivalentTo(OrderStatus.Created);
+    }
+
+    /// <summary>
     ///     Проверяем возможность завершить назгначенный заказ
     /// </summary>
     [Fact]

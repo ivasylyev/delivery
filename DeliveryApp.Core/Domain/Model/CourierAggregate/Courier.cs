@@ -43,7 +43,7 @@ public class Courier : Aggregate<Guid>
     {
         if (order == null)
             return GeneralErrors.ValueIsRequired(nameof(order));
-        
+
         var sum = order.Volume;
         foreach (var assignment in Assignments)
         {
@@ -51,6 +51,17 @@ public class Courier : Aggregate<Guid>
         }
 
         return sum <= MaxVolume;
+    }
+
+    public Result<double, Error> GetFillFactor()
+    {
+        if (!Assignments.Any())
+            return 0;
+
+        var free = MaxVolume;
+        foreach (var assignment in Assignments) free -= assignment.Volume;
+
+        return (MaxVolume - free) / MaxVolume;
     }
 
     public UnitResult<Error> AssignOrder(Order order)
@@ -73,7 +84,7 @@ public class Courier : Aggregate<Guid>
         var assignment = Assignments.FirstOrDefault(a => a.OrderId == order.Id);
         if (assignment == null)
             return new Error("order.must.be.assigned.to.courier", "Can not complete order which is not assigned to courier");
-        
+
         var completed = assignment.Complete(Location);
 
         return completed;

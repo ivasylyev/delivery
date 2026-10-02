@@ -49,6 +49,15 @@ public class Order : Aggregate<Guid>
         return true;
     }
 
+    public Result<bool, Error> AssignRollback()
+    {
+        if (Status != OrderStatus.Assigned)
+            return new Error("status.must.be.assigned", "Could not rollback assignment if order is not assigned");
+
+        Status = OrderStatus.Created;
+        return true;
+    }
+
     public Result<bool, Error> Complete()
     {
         if (Status == OrderStatus.Completed)

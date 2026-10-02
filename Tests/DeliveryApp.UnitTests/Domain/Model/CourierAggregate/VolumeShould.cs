@@ -185,4 +185,23 @@ public class VolumeShould
         //Assert
         lessOrEqual.Should().Be(res);
     }
+
+    /// <summary>
+    ///     Проверяем деление Volume
+    /// </summary>
+    [Theory]
+    [InlineData(6, 1, 6)]
+    [InlineData(10, 4, 2.5)]
+    [InlineData(5, 5, 1)]
+    [InlineData(1, 5, 0.2)]
+    public void BeDivided(int l1, int l2, double res)
+    {
+        //Arrange
+        var first = Volume.Create(l1).Value;
+        var second = Volume.Create(l2).Value;
+        //Act
+        var division = first / second;
+        //Assert
+        division.Should().Be(res);
+    }
 }
